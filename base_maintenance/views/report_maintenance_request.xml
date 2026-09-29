@@ -107,7 +107,6 @@
         <field name="model">maintenance.request</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">base_maintenance.report_maintenance_request</field>
-        <field name="report_file">base_maintenance.report_maintenance_request</field>
         <field
             name="print_report_name"
         >'Maintenance Request - %s' % (object.name)</field>
