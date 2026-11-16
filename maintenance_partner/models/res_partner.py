@@ -16,22 +16,22 @@ class ResPartner(models.Model):
 
     @api.depends("equipment_ids")
     def _compute_equipment_count(self):
-        rg_res = self.env["maintenance.equipment"].read_group(
-            [("assigned_partner_id", "in", self.ids)],
-            ["assigned_partner_id"],
-            ["assigned_partner_id"],
+        counts = dict(
+            self.env["maintenance.equipment"]._read_group(
+                [("assigned_partner_id", "in", self.ids)],
+                ["assigned_partner_id"],
+                ["__count"],
+            )
         )
-        mapped_data = {
-            x["assigned_partner_id"][0]: x["assigned_partner_id_count"] for x in rg_res
-        }
         for partner in self:
-            partner.equipment_count = mapped_data.get(partner.id, 0)
+            partner.equipment_count = counts.get(partner, 0)
 
     @api.depends("maintenance_request_ids")
     def _compute_maintenance_request_count(self):
-        rg_res = self.env["maintenance.request"].read_group(
-            [("partner_id", "in", self.ids)], ["partner_id"], ["partner_id"]
+        counts = dict(
+            self.env["maintenance.request"]._read_group(
+                [("partner_id", "in", self.ids)], ["partner_id"], ["__count"]
+            )
         )
-        mapped_data = {x["partner_id"][0]: x["partner_id_count"] for x in rg_res}
         for partner in self:
-            partner.maintenance_request_count = mapped_data.get(partner.id, 0)
+            partner.maintenance_request_count = counts.get(partner, 0)
